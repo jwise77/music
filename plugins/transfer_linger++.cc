@@ -47,6 +47,9 @@ private:
 			
 			const double zero = 1e-10;
 			
+			if( m_bnovrel )
+			  std::cerr << " - transfer_linger++ : disabling baryon-DM relative velocity\n";
+
 			while( !ifs.eof() ){
 				getline(ifs,line);
 				
@@ -64,11 +67,8 @@ private:
                 ss >> Tkvtot;
                 ss >> Tktot0;
 
-		if( m_bnovrel )
-		{
-			std::cerr << " - transfer_linger++ : disabling baryon-DM relative velocity\n";
-			Tkvb = Tkvc;
-		}		
+				if( m_bnovrel ) Tkvb = Tkvc;
+				
 				Tktot = std::max(zero,Tktot);
 				Tkc   = std::max(zero,Tkc);
 				Tkb   = std::max(zero,Tkb);

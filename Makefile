@@ -12,9 +12,11 @@ BOXLIB_HOME     = ${HOME}/nyx_tot_sterben/BoxLib
 CC      = g++
 OPT     = -Wall -Wno-unknown-pragmas -O3 -g -mtune=native
 CFLAGS  =  
-LFLAGS  = -lgsl -lgslcblas 
-CPATHS  = -I. -I$(HOME)/local/include -I/opt/local/include -I/usr/local/include
-LPATHS  = -L$(HOME)/local/lib -L/opt/local/lib -L/usr/local/lib
+LFLAGS  = -lgsl -lgslcblas
+HPATHS  = /usr/lib/x86_64-linux-gnu/hdf5/serial
+CPATHS  = -I. -I$(HOME)/local/include -I/opt/local/include -I/usr/local/include \
+	  -I$(HPATHS)/include
+LPATHS  = -L$(HOME)/local/lib -L/opt/local/lib -L/usr/local/lib -L$(HPATHS)/lib
 
 ##############################################################################
 # if you have FFTW 2.1.5 or 3.x with multi-thread support, you can enable the 
@@ -121,4 +123,3 @@ ifeq ($(strip $(HAVEBOXLIB)), yes)
 	cd plugins/nyx_plugin; make realclean BOXLIB_HOME=$(BOXLIB_HOME)
 endif
 	cd $(oldpath)
-	

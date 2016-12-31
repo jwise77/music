@@ -19,6 +19,7 @@ private:
 	gsl_interp_accel *acc_dtot, *acc_dcdm, *acc_dbaryon, *acc_vcdm, *acc_vbaryon;
 	gsl_spline *spline_dtot, *spline_dcdm, *spline_dbaryon, *spline_vcdm, *spline_vbaryon;
 	
+	bool m_bnovrel;	
 	
 	
 	void read_table( void ){
@@ -33,7 +34,7 @@ private:
 			std::ifstream ifs( m_filename_Tk.c_str() );
 			
 			if(! ifs.good() )
-				throw std::runtime_error("Could not find transfer function file \'"+m_filename_Tk+"\'");
+			  throw std::runtime_error("Could not find transfer function file \'"+m_filename_Tk+"\'");
 			
 			m_tab_k.clear();
 			m_tab_Tk_tot.clear();
@@ -45,6 +46,8 @@ private:
             double Tktotmin = 1e30, Tkcmin = 1e30, Tkbmin = 1e30, Tkvcmin = 1e30, Tkvbmin = 1e30;
 			double ktotmin = 1e30, kcmin = 1e30, kbmin = 1e30, kvcmin = 1e30, kvbmin = 1e30;
             
+			if( m_bnovrel )
+			  std::cerr << " - transfer_music : disabling baryon-DM relative velocity\n";
 			while( !ifs.eof() ){
 				getline(ifs,line);
 				
@@ -60,6 +63,7 @@ private:
 				ss >> Tkvc;
 				ss >> Tkvb;
                 
+		if( m_bnovrel ) Tkvb = Tkvc;
                 // store log(k)
                 m_tab_k.push_back( log10(k) );
                 
@@ -121,6 +125,8 @@ public:
 	: transfer_function_plugin( cf )
 	{
 		m_filename_Tk = pcf_->getValue<std::string>("cosmology","transfer_file");
+		//.. disable the baryon-CDM relative velocity (both follow the total matter potential)
+		m_bnovrel		= pcf_->getValueSafe<bool>("cosmology","no_vrel",false);
 		
 		read_table( );
 		
@@ -144,6 +150,7 @@ public:
 		
 		tf_distinct_ = true;
 		tf_withvel_  = true;
+		tf_velunits_ = true;
 	}
 	
 	~transfer_MUSIC_plugin()
